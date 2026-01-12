@@ -1,1 +1,1 @@
-rootProject.name = "computer-shop"
+rootProject.name = "restapi-app"
