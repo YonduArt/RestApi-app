@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страны мира</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 Страны мира</h1>
+            <a th:href="@{/country/new}" class="btn btn-primary">+ Добавить страну</a>
+        </header>
+
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <div class="search-section">
+            <form method="get" action="/" class="search-form">
+                <input type="text" name="search" th:value="${search}" placeholder="Поиск по названию..." class="search-input">
+                <button type="submit" class="btn btn-search">🔍 Найти</button>
+                <a th:href="@{/}" class="btn btn-secondary">Очистить</a>
+            </form>
+        </div>
+
+        <div class="countries-grid" th:if="${!countries.empty}">
+            <div class="country-card" th:each="country : ${countries}">
+                <div class="country-header">
+                    <h2 th:text="${country.name}">Название страны</h2>
+                    <span class="country-id">#<span th:text="${country.id}">ID</span></span>
+                </div>
+                <div class="country-info">
+                    <p class="population">👥 Население: <strong th:text="${#numbers.formatDecimal(country.population, 0, 'COMMA', 0, 'POINT')}">0</strong></p>
+                    <p class="cities" th:if="${!country.cities.empty}">
+                        🏙️ Города: <span th:each="city, iterStat : ${country.cities}">
+                            <span th:text="${city.name}"></span><span th:if="${!iterStat.last}">, </span>
+                        </span>
+                    </p>
+                    <p class="cities" th:if="${country.cities.empty}">🏙️ Города не указаны</p>
+                </div>
+                <div class="country-actions">
+                    <a th:href="@{/country/{id}(id=${country.id})}" class="btn btn-info">Подробнее</a>
+                    <a th:href="@{/country/{id}/edit(id=${country.id})}" class="btn btn-warning">Редактировать</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state" th:if="${countries.empty}">
+            <p>Страны не найдены</p>
+            <a th:href="@{/country/new}" class="btn btn-primary">Добавить первую страну</a>
+        </div>
+
+        <div class="pagination" th:if="${!countries.empty && search == null || search == ''}">
+            <a th:if="${currentPage > 0}" th:href="@{/(page=${currentPage - 1})}" class="btn btn-secondary">← Назад</a>
+            <span class="page-info">Страница <span th:text="${currentPage + 1}">1</span></span>
+            <a th:if="${countries.size() == 2}" th:href="@{/(page=${currentPage + 1})}" class="btn btn-secondary">Вперёд →</a>
+        </div>
+    </div>
+</body>
+</html>
+

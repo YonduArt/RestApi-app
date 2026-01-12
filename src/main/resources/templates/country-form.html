@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit ? 'Редактирование страны' : 'Новая страна'}">Форма страны</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 th:text="${isEdit ? 'Редактирование страны' : 'Добавление новой страны'}">Форма страны</h1>
+            <a th:href="@{/}" class="btn btn-secondary">← Назад к списку</a>
+        </header>
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <form th:if="${!isEdit}" th:action="@{/country}" method="post" class="country-form">
+            <div class="form-group">
+                <label for="name">Название страны *</label>
+                <input type="text" id="name" name="name" th:value="${country.name}" required class="form-control" placeholder="Введите название страны">
+            </div>
+
+            <div class="form-group">
+                <label for="population">Население *</label>
+                <input type="number" id="population" name="population" th:value="${country.population}" required min="0" class="form-control" placeholder="Введите количество населения">
+            </div>
+
+            <div class="form-group">
+                <label>Города</label>
+                <div id="cities-container">
+                    <div class="city-input-group" th:each="city, iterStat : ${country.cities}">
+                        <input type="text" name="cityNames" th:value="${city.name}" class="form-control city-input" placeholder="Название города">
+                        <button type="button" class="btn btn-danger btn-remove-city" onclick="removeCity(this)">✕</button>
+                    </div>
+                    <div class="city-input-group" th:if="${country.cities.empty}">
+                        <input type="text" name="cityNames" class="form-control city-input" placeholder="Название города">
+                        <button type="button" class="btn btn-danger btn-remove-city" onclick="removeCity(this)">✕</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-add-city" onclick="addCity()">+ Добавить город</button>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span>Создать страну</span>
+                </button>
+                <a th:href="@{/}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+
+        <form th:if="${isEdit}" th:action="@{/country/{id}(id=${country.id})}" method="post" class="country-form">
+            <div class="form-group">
+                <label for="name">Название страны *</label>
+                <input type="text" id="name" name="name" th:value="${country.name}" required class="form-control" placeholder="Введите название страны">
+            </div>
+
+            <div class="form-group">
+                <label for="population">Население *</label>
+                <input type="number" id="population" name="population" th:value="${country.population}" required min="0" class="form-control" placeholder="Введите количество населения">
+            </div>
+
+            <div class="form-group">
+                <label>Города</label>
+                <div id="cities-container">
+                    <div class="city-input-group" th:each="city, iterStat : ${country.cities}">
+                        <input type="text" name="cityNames" th:value="${city.name}" class="form-control city-input" placeholder="Название города">
+                        <button type="button" class="btn btn-danger btn-remove-city" onclick="removeCity(this)">✕</button>
+                    </div>
+                    <div class="city-input-group" th:if="${country.cities.empty}">
+                        <input type="text" name="cityNames" class="form-control city-input" placeholder="Название города">
+                        <button type="button" class="btn btn-danger btn-remove-city" onclick="removeCity(this)">✕</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-add-city" onclick="addCity()">+ Добавить город</button>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span>Сохранить изменения</span>
+                </button>
+                <a th:href="@{/}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function addCity() {
+            const container = document.getElementById('cities-container');
+            const newCityInput = document.createElement('div');
+            newCityInput.className = 'city-input-group';
+            newCityInput.innerHTML = `
+                <input type="text" name="cityNames" class="form-control city-input" placeholder="Название города">
+                <button type="button" class="btn btn-danger btn-remove-city" onclick="removeCity(this)">✕</button>
+            `;
+            container.appendChild(newCityInput);
+        }
+
+        function removeCity(button) {
+            const container = document.getElementById('cities-container');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                button.previousElementSibling.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
+
